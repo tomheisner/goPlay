@@ -30,7 +30,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	
-	if len(q["homepage"]) > 0 && host == "" {
+	if len(q["homepage"]) > 0 {
 		host = q["homepage"][0]
 		// when switching to a new homepage root we ask for the user id
 		if len(q["userid"]) > 0{
@@ -51,8 +51,10 @@ func handleRequest(w http.ResponseWriter, r *http.Request){
 			return
 		}
 	}else{
-		writeMessageToFrontend(w, "Mandatory URI Parameter 'homepage' not found. Aborting.")
-		return
+		if host == "" { // no param and no host set yet...
+			writeMessageToFrontend(w, "Mandatory URI Parameter 'homepage' not found. Aborting.")
+			return
+		}	
 	}
 
 	if(strings.Compare("exit", urlSuffix) == 0){
