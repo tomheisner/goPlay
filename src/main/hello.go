@@ -32,28 +32,30 @@ func handleRequest(w http.ResponseWriter, r *http.Request){
 	
 	if len(q["homepage"]) > 0{
 		host = q["homepage"][0]
+		// when switching to a new homepage root we ask for the user id
+		if len(q["userid"]) > 0{
+			uriUser = q["userid"][0]
+		}else{
+			writeMessageToFrontend(w, "Mandatory URI Parameter 'userid' not found. Aborting.")
+			return
+		}
+		if len(q["passwd"]) > 0{
+			uriPass = q["passwd"][0]
+		}else{
+			writeMessageToFrontend(w, "Mandatory URI Parameter 'passwd' not found. Aborting.")
+			return
+		}
+
+		if !checkUserPass(uriUser, uriPass){
+			writeMessageToFrontend(w, "Credential verification failed. Ensure you provide the secret values... &gt; Aborting.")
+			return
+		}
+		
+
 	}else{
 		writeMessageToFrontend(w, "Mandatory URI Parameter 'homepage' not found. Aborting.")
 		return
 	}
-	if len(q["userid"]) > 0{
-		uriUser = q["userid"][0]
-	}else{
-		writeMessageToFrontend(w, "Mandatory URI Parameter 'userid' not found. Aborting.")
-		return
-	}
-	if len(q["passwd"]) > 0{
-		uriPass = q["passwd"][0]
-	}else{
-		writeMessageToFrontend(w, "Mandatory URI Parameter 'passwd' not found. Aborting.")
-		return
-	}
-
-	if !checkUserPass(uriUser, uriPass){
-		writeMessageToFrontend(w, "Credential verification failed. Ensure you provide the secret values... &gt; Aborting.")
-		return
-	}
-	
 	if(strings.Compare("exit", urlSuffix) == 0){
 		fmt.Printf("Received Exit Command. Terminating ...\n")
 		os.Exit(0)
