@@ -30,7 +30,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	
-	if len(q["homepage"]) > 0{
+	if len(q["homepage"]) > 0 && host == "" {
 		host = q["homepage"][0]
 		// when switching to a new homepage root we ask for the user id
 		if len(q["userid"]) > 0{
@@ -50,12 +50,11 @@ func handleRequest(w http.ResponseWriter, r *http.Request){
 			writeMessageToFrontend(w, "Credential verification failed. Ensure you provide the secret values... &gt; Aborting.")
 			return
 		}
-		
-
 	}else{
 		writeMessageToFrontend(w, "Mandatory URI Parameter 'homepage' not found. Aborting.")
 		return
 	}
+
 	if(strings.Compare("exit", urlSuffix) == 0){
 		fmt.Printf("Received Exit Command. Terminating ...\n")
 		os.Exit(0)
