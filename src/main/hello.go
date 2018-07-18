@@ -24,14 +24,34 @@ func main(){
 func handleRequest(w http.ResponseWriter, r *http.Request){
 
 	urlSuffix := strings.TrimPrefix(r.URL.Path, "/")
-	if q := r.URL.Query(); q != nil && len(q["homepage"]) > 0{
+	q := r.URL.Query()
+	if q == nil {
+		writeMessageToFrontend(w, "Mandatory URI Parameters not found. Provide 'homepage', 'userid' and 'passwd'. Aborting.")
+		return
+	}
+	
+	if len(q["homepage"]) > 0{
 		host = q["homepage"][0]
+	}else{
+		writeMessageToFrontend(w, "Mandatory URI Parameter 'homepage' not found. Aborting.")
+		return
+	}
+	if len(q["userid"]) > 0{
 		uriUser = q["userid"][0]
+	}else{
+		writeMessageToFrontend(w, "Mandatory URI Parameter 'userid' not found. Aborting.")
+		return
+	}
+	if len(q["passwd"]) > 0{
 		uriPass = q["passwd"][0]
-		if !checkUserPass(uriUser, uriPass){
-			w.Write([]byte("<html><head></head><body>Credential verification failed. Aborted.</body></html>"))
-			return
-		}
+	}else{
+		writeMessageToFrontend(w, "Mandatory URI Parameter 'passwd' not found. Aborting.")
+		return
+	}
+
+	if !checkUserPass(uriUser, uriPass){
+		writeMessageToFrontend(w, "Credential verification failed. Ensure you provide the secret values... &gt; Aborting.")
+		return
 	}
 	
 	if(strings.Compare("exit", urlSuffix) == 0){
@@ -76,7 +96,9 @@ func checkUserPass(user string, pass string) bool{
 		fmt.Printf("Provided Username and Password does not match expected value\nUser from Store: " + username + " vs. provided: " + user + "\nPass from Store: " + password + " vs. provided: " + pass)	
 		return false
 	}
-	
-	
+}
+
+func writeMessageToFrontend(w http.ResponseWriter, message string)(){
+	w.Write([]byte("<html><head></head><body>" + message + "</body></html>"))
 }
 
