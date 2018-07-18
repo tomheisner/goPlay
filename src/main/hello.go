@@ -28,7 +28,10 @@ func handleRequest(w http.ResponseWriter, r *http.Request){
 		host = q["homepage"][0]
 		uriUser = q["userid"][0]
 		uriPass = q["passwd"][0]
-		checkUserPass(uriUser, uriPass)
+		if !checkUserPass(uriUser, uriPass){
+			w.Write([]byte("<html><head></head><body>Credential verification failed. Aborted.</body></html>"))
+			return
+		}
 	}
 	
 	if(strings.Compare("exit", urlSuffix) == 0){
@@ -66,8 +69,14 @@ func checkUserPass(user string, pass string) bool{
 	username := string(userdata)
 	password := string(passdata)
 	
-	fmt.Printf("Username: " + username + "\npassword: " + password)
-	return true;
+	if(strings.Compare(username, user) == 0 && strings.Compare(password, pass) == 0){
+		fmt.Printf("Valid Username and Password provided\n")	
+		return true
+	}else{
+		fmt.Printf("Provided Username and Password does not match expected value\nUser from Store: " + username + " vs. provided: " + user + "\nPass from Store: " + password + " vs. provided: " + pass)	
+		return false
+	}
+	
 	
 }
 
