@@ -16,7 +16,12 @@ func main(){
   // register out handle request method
   fmt.Printf("> Starting up HeisnerServer\n")
   http.HandleFunc("/", handleRequest)
-  if err := http.ListenAndServe(":8080", nil); err != nil {
+  
+  
+  
+//  if err := http.ListenAndServeTLS(":443", "C:\\data\\dev\\env\\minicube\\sslcerts\\server.crt", "C:\\data\\dev\\env\\minicube\\sslcerts\\server-key.pem", nil); err != nil{
+  if err := http.ListenAndServeTLS(":443", "/etc/heisner-tls/cert", "/etc/heisner-tls/key", nil); err != nil{
+  //err := http.ListenAndServe(":8080", nil); err != nil {
     panic(err)
   }
 }
